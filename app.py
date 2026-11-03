@@ -403,6 +403,30 @@ def resultado():
         return redirect(url_for("processar"))
     return render_template("resultado.html", files=files)
 
+@app.route("/download/todos")
+@login_required
+def download_todos():
+    files = session.get("last_files", {})
+    paths = [files.get("original"), files.get("filtrado"), files.get("vcf")]
+    paths = [p for p in paths if p and Path(p).exists()]
+    if len(paths) < 3:
+        flash("Arquivos não encontrados.")
+        return redirect(url_for("processar"))
+
+    import io
+    import zipfile
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+        for p in paths:
+            zf.write(p, Path(p).name)
+    buffer.seek(0)
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="arquivos_gov.zip",
+        mimetype="application/zip"
+    )
+
 @app.route("/download/<tipo>")
 @login_required
 def download(tipo):
@@ -475,6 +499,38 @@ def admin_usuarios():
     usuarios = conn.execute("SELECT id, username, is_admin, criado_em FROM usuarios").fetchall()
     conn.close()
     return render_template("admin_usuarios.html", usuarios=usuarios)
+
+@app.route("/admin/importar-banco", methods=["GET", "POST"])
+@admin_required
+def importar_banco():
+    if request.method == "POST":
+        if "banco" not in request.files:
+            flash("Nenhum arquivo enviado.")
+            return redirect(request.url)
+        arquivo = request.files["banco"]
+        if arquivo.filename == "" or not arquivo.filename.endswith(".db"):
+            flash("Envie um arquivo .db válido.")
+            return redirect(request.url)
+        
+        temp_path = BASE_DIR / "banco_temp.db"
+        arquivo.save(temp_path)
+        
+        try:
+            test_conn = sqlite3.connect(temp_path)
+            test_conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+            test_conn.close()
+            
+            if DB_PATH.exists():
+                DB_PATH.unlink()
+            shutil.move(str(temp_path), str(DB_PATH))
+            flash("Banco de dados importado com sucesso!")
+        except Exception as e:
+            if temp_path.exists():
+                temp_path.unlink(missing_ok=True)
+            flash(f"Erro ao importar banco: {str(e)}")
+        return redirect(url_for("admin_usuarios"))
+    
+    return render_template("importar_banco.html")
 
 @app.route("/funcionarios", methods=["GET", "POST"])
 @login_required

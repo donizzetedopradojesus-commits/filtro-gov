@@ -28,6 +28,8 @@
         <a href="{{ url_for('download', tipo='filtrado') }}" class="btn">Baixar FILTRADO.txt</a>
         <a href="{{ url_for('download', tipo='vcf') }}" class="btn">Baixar VCF</a>
         <br><br>
+        <a href="{{ url_for('download_todos') }}" class="btn" style="background:#6f42c1;">Baixar os 3 juntos (ZIP)</a>
+        <br><br>
         <a href="{{ url_for('processar') }}">Processar outro arquivo</a>
     </div>
 </body>
