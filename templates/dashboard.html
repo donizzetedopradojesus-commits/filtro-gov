@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <title>Dashboard - Filtro GOV</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background: #f8f9fa; }
-        .header { background: #007bff; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            background: #f8f9fa url("{{ url_for('static', filename='fundo.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.82);
+            z-index: -1;
+        }
+        .header { background: #007bff; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
         .header a { color: white; text-decoration: none; margin-left: 20px; }
         .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
@@ -16,10 +28,7 @@
 </head>
 <body>
     <div class="header">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="height:40px;">
-            <b>Filtro GOV Agenda</b> — Olá, {{ username }}
-        </div>
+        <div><b>Filtro GOV Agenda</b> — Olá, {{ username }}</div>
         <div>
             {% if is_admin %}<a href="{{ url_for('admin_usuarios') }}">Usuários</a>{% endif %}
             <a href="{{ url_for('alterar_senha') }}">Alterar Senha</a>

@@ -57,7 +57,9 @@ def init_db():
             criado_em TEXT
         );
     """)
-    if not conn.execute("SELECT 1 FROM usuarios WHERE username = 'admin'").fetchone():
+    # Sempre garante que o admin existe
+    admin = conn.execute("SELECT id FROM usuarios WHERE username = 'admin'").fetchone()
+    if not admin:
         conn.execute(
             "INSERT INTO usuarios (username, password_hash, is_admin, criado_em) VALUES (?, ?, 1, ?)",
             ("admin", generate_password_hash("admin123"), datetime.now().isoformat())
