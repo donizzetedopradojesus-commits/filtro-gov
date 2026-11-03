@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro - Filtro GOV</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; }
+        .header { background: #007bff; color: white; padding: 15px 30px; }
+        .header a { color: white; text-decoration: none; }
+        .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; }
+        pre { background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="{{ url_for('pesquisa') }}">← Voltar à pesquisa</a>
+    </div>
+    <div class="container">
+        <h2>{{ registro.empresa }}</h2>
+        <p><b>CNPJ:</b> {{ registro.cnpj }} &nbsp;|&nbsp; <b>ID:</b> {{ registro.empresa_id }}</p>
+        <pre>{{ registro.conteudo }}</pre>
+    </div>
+</body>
+</html>

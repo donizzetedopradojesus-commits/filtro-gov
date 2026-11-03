@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Processar - Filtro GOV</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; }
+        .header { background: #007bff; color: white; padding: 15px 30px; }
+        .header a { color: white; text-decoration: none; }
+        .container { max-width: 700px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; }
+        label { display: block; margin: 15px 0 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { background: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        .flash { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+        .flash.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="{{ url_for('dashboard') }}">← Voltar</a>
+    </div>
+    <div class="container">
+        <h2>Processar Arquivo</h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash">{{ messages[0] }}</div>
+            {% endif %}
+        {% endwith %}
+        <form method="post" enctype="multipart/form-data">
+            <label>Arquivo (TXT, ZIP ou GZ)</label>
+            <input type="file" name="arquivo" accept=".txt,.zip,.gz,.txt.gz" required>
+
+            <label>Funcionário</label>
+            <select name="funcionario" required>
+                <option value="">Selecione...</option>
+                {% for f in funcionarios %}
+                    <option value="{{ f }}">{{ f }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Letra da Agência</label>
+            <select name="letra">
+                <option value="N">N</option>
+                <option value="B">B</option>
+            </select>
+
+            <button type="submit">Processar e Gerar Arquivos</button>
+        </form>
+    </div>
+</body>
+</html>

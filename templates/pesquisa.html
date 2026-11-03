@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Pesquisa - Filtro GOV</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; }
+        .header { background: #007bff; color: white; padding: 15px 30px; }
+        .header a { color: white; text-decoration: none; }
+        .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; }
+        input[type=text] { width: 70%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        tr:hover { background: #f1f1f1; }
+        a { color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="{{ url_for('dashboard') }}">← Voltar</a>
+    </div>
+    <div class="container">
+        <h2>Pesquisar no Banco</h2>
+        <form method="post">
+            <input type="text" name="q" placeholder="Telefone, CPF, CNPJ, nome, empresa..." required>
+            <button type="submit">Pesquisar</button>
+        </form>
+        {% if resultados %}
+            <p>{{ resultados|length }} resultado(s)</p>
+            <table>
+                <tr><th>Empresa</th><th>CNPJ</th><th>ID</th><th>Ação</th></tr>
+                {% for r in resultados %}
+                <tr>
+                    <td>{{ r.empresa }}</td>
+                    <td>{{ r.cnpj }}</td>
+                    <td>{{ r.empresa_id }}</td>
+                    <td><a href="{{ url_for('ver', rid=r.id) }}">Ver</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html>
