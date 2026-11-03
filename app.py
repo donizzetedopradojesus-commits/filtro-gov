@@ -497,6 +497,8 @@ def funcionarios():
         return redirect(url_for("funcionarios"))
     return render_template("funcionarios.html", funcionarios=lista)
 
+# Inicializa o banco ao carregar o app (funciona com gunicorn)
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
