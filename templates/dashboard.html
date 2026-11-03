@@ -19,6 +19,7 @@
         <div><b>Filtro GOV Agenda</b> — Olá, {{ username }}</div>
         <div>
             {% if is_admin %}<a href="{{ url_for('admin_usuarios') }}">Usuários</a>{% endif %}
+            <a href="{{ url_for('alterar_senha') }}">Alterar Senha</a>
             <a href="{{ url_for('logout') }}">Sair</a>
         </div>
     </div>

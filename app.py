@@ -482,12 +482,20 @@ def admin_usuarios():
         elif action == "excluir":
             uid = request.form.get("uid")
             if uid:
-                conn.execute("DELETE FROM usuarios WHERE id = ? AND username != 'admin'", (uid,))
+                conn.execute("DELETE FROM usuarios WHERE id = ?", (uid,))
                 conn.commit()
                 flash("Usuário excluído.")
     usuarios = conn.execute("SELECT id, username, is_admin, criado_em FROM usuarios").fetchall()
     conn.close()
     return render_template("admin_usuarios.html", usuarios=usuarios)
+
+@app.route("/admin/baixar-banco")
+@admin_required
+def baixar_banco():
+    if not DB_PATH.exists():
+        flash("Banco de dados não encontrado.")
+        return redirect(url_for("admin_usuarios"))
+    return send_file(DB_PATH, as_attachment=True, download_name="banco_dados.db")
 
 @app.route("/admin/importar-banco", methods=["GET", "POST"])
 @admin_required
@@ -522,6 +530,30 @@ def importar_banco():
         return redirect(url_for("admin_usuarios"))
 
     return render_template("importar_banco.html")
+
+@app.route("/alterar-senha", methods=["GET", "POST"])
+@login_required
+def alterar_senha():
+    if request.method == "POST":
+        senha_atual = request.form.get("senha_atual", "")
+        nova_senha = request.form.get("nova_senha", "")
+        confirma = request.form.get("confirma", "")
+        if not nova_senha or nova_senha != confirma:
+            flash("As senhas não conferem.")
+            return redirect(request.url)
+        conn = get_db()
+        user = conn.execute("SELECT password_hash FROM usuarios WHERE username = ?", (session["username"],)).fetchone()
+        if not user or not check_password_hash(user["password_hash"], senha_atual):
+            flash("Senha atual incorreta.")
+            conn.close()
+            return redirect(request.url)
+        conn.execute("UPDATE usuarios SET password_hash = ? WHERE username = ?",
+                     (generate_password_hash(nova_senha), session["username"]))
+        conn.commit()
+        conn.close()
+        flash("Senha alterada com sucesso!")
+        return redirect(url_for("dashboard"))
+    return render_template("alterar_senha.html")
 
 @app.route("/funcionarios", methods=["GET", "POST"])
 @login_required

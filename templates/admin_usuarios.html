@@ -22,7 +22,10 @@
     </div>
     <div class="container">
         <h2>Gerenciar Usuários</h2>
-        <p><a href="{{ url_for('importar_banco') }}">Importar Banco de Dados (.db)</a></p>
+        <p>
+            <a href="{{ url_for('importar_banco') }}">Importar Banco de Dados (.db)</a> |
+            <a href="{{ url_for('baixar_banco') }}">Baixar Banco de Dados Atual</a>
+        </p>
         {% with messages = get_flashed_messages() %}
             {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
         {% endwith %}
@@ -43,7 +46,7 @@
                 <td>{{ "Sim" if u.is_admin else "Não" }}</td>
                 <td>{{ u.criado_em[:16] if u.criado_em else "" }}</td>
                 <td>
-                    {% if u.username != "admin" %}
+                    {% if u.username != "admin" or usuarios|length > 1 %}
                     <form method="post" style="display:inline;">
                         <input type="hidden" name="action" value="excluir">
                         <input type="hidden" name="uid" value="{{ u.id }}">

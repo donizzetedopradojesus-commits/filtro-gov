@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Alterar Senha</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; }
+        .header { background: #007bff; color: white; padding: 15px 30px; }
+        .header a { color: white; text-decoration: none; }
+        .container { max-width: 500px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; }
+        input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { padding: 12px 25px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .flash { padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #d4edda; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="{{ url_for('dashboard') }}">← Voltar</a>
+    </div>
+    <div class="container">
+        <h2>Alterar Senha</h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
+        {% endwith %}
+        <form method="post">
+            <input type="password" name="senha_atual" placeholder="Senha atual" required>
+            <input type="password" name="nova_senha" placeholder="Nova senha" required>
+            <input type="password" name="confirma" placeholder="Confirmar nova senha" required>
+            <button type="submit">Alterar Senha</button>
+        </form>
+    </div>
+</body>
+</html>
