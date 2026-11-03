@@ -1,0 +1,3 @@
+# Coloque sua imagem aqui com o nome logo.png
+# Formatos aceitos: PNG, JPG, SVG
+# Tamanho recomendado: até 300x100 pixels

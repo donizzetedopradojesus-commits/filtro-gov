@@ -16,7 +16,10 @@
 </head>
 <body>
     <div class="header">
-        <div><b>Filtro GOV Agenda</b> — Olá, {{ username }}</div>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="height:40px;">
+            <b>Filtro GOV Agenda</b> — Olá, {{ username }}
+        </div>
         <div>
             {% if is_admin %}<a href="{{ url_for('admin_usuarios') }}">Usuários</a>{% endif %}
             <a href="{{ url_for('alterar_senha') }}">Alterar Senha</a>

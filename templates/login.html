@@ -15,6 +15,9 @@
 </head>
 <body>
     <div class="box">
+        <div style="text-align:center; margin-bottom:20px;">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="max-width:180px; height:auto;">
+        </div>
         <h2>Filtro GOV Agenda</h2>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
