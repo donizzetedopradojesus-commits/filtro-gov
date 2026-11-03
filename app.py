@@ -4,19 +4,19 @@ import json
 import sqlite3
 import gzip
 import zipfile
-import tempfile
 import shutil
+import io
 from datetime import datetime
 from pathlib import Path
 from collections import Counter
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "troque-esta-chave-em-producao-123456")
-app.config["MAX_CONTENT_LENGTH"] = 300 * 1024 * 1024  # 300 MB
+app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB
 
 BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "banco_dados.db"
@@ -57,7 +57,6 @@ def init_db():
             criado_em TEXT
         );
     """)
-    # Cria admin padrão se não existir
     if not conn.execute("SELECT 1 FROM usuarios WHERE username = 'admin'").fetchone():
         conn.execute(
             "INSERT INTO usuarios (username, password_hash, is_admin, criado_em) VALUES (?, ?, 1, ?)",
@@ -270,10 +269,8 @@ def processar_arquivo(caminho_arquivo, letra, funcionario):
     prefixo = f"DDD{ddd}" if ddd != "SEM-DDD" else ddd
     base = safe(f"{prefixo} - {funcionario} - {len(R)} INFO - {now:%d-%m-%Y} - {now:%H-%M}")
 
-    # Salva no banco
     n, r = importar_blocos(original, base + " - ORIGINAL.txt")
 
-    # Gera arquivos temporários
     out_dir = OUTPUT_FOLDER / session.get("username", "user") / datetime.now().strftime("%Y%m%d_%H%M%S")
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -368,7 +365,6 @@ def processar():
             flash("Selecione ou informe o funcionário.")
             return redirect(request.url)
 
-        # Salva upload
         filename = secure_filename(arquivo.filename)
         upload_path = UPLOAD_FOLDER / f"{session['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{filename}"
         arquivo.save(upload_path)
@@ -413,19 +409,12 @@ def download_todos():
         flash("Arquivos não encontrados.")
         return redirect(url_for("processar"))
 
-    import io
-    import zipfile
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
         for p in paths:
             zf.write(p, Path(p).name)
     buffer.seek(0)
-    return send_file(
-        buffer,
-        as_attachment=True,
-        download_name="arquivos_gov.zip",
-        mimetype="application/zip"
-    )
+    return send_file(buffer, as_attachment=True, download_name="arquivos_gov.zip", mimetype="application/zip")
 
 @app.route("/download/<tipo>")
 @login_required
@@ -508,28 +497,30 @@ def importar_banco():
             flash("Nenhum arquivo enviado.")
             return redirect(request.url)
         arquivo = request.files["banco"]
-        if arquivo.filename == "" or not arquivo.filename.endswith(".db"):
+        if not arquivo or arquivo.filename == "" or not arquivo.filename.lower().endswith(".db"):
             flash("Envie um arquivo .db válido.")
             return redirect(request.url)
-        
-        temp_path = BASE_DIR / "banco_temp.db"
-        arquivo.save(temp_path)
-        
+
         try:
-            test_conn = sqlite3.connect(temp_path)
-            test_conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
-            test_conn.close()
-            
             if DB_PATH.exists():
                 DB_PATH.unlink()
-            shutil.move(str(temp_path), str(DB_PATH))
+            arquivo.save(DB_PATH)
+
+            test_conn = sqlite3.connect(DB_PATH)
+            tables = [r[0] for r in test_conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
+            test_conn.close()
+            if "blocos" not in tables:
+                raise Exception("Banco não contém a tabela 'blocos'.")
+
+            # Garante que a tabela de usuários existe após importar
+            init_db()
             flash("Banco de dados importado com sucesso!")
         except Exception as e:
-            if temp_path.exists():
-                temp_path.unlink(missing_ok=True)
-            flash(f"Erro ao importar banco: {str(e)}")
+            if DB_PATH.exists():
+                DB_PATH.unlink(missing_ok=True)
+            flash(f"Erro ao importar: {str(e)}")
         return redirect(url_for("admin_usuarios"))
-    
+
     return render_template("importar_banco.html")
 
 @app.route("/funcionarios", methods=["GET", "POST"])
@@ -553,7 +544,7 @@ def funcionarios():
         return redirect(url_for("funcionarios"))
     return render_template("funcionarios.html", funcionarios=lista)
 
-# Inicializa o banco ao carregar o app (funciona com gunicorn)
+# Inicializa o banco ao carregar
 init_db()
 
 if __name__ == "__main__":

@@ -26,7 +26,6 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
         {% endwith %}
-
         <h3>Criar novo usuário</h3>
         <form method="post">
             <input type="hidden" name="action" value="criar">
@@ -35,7 +34,6 @@
             <label><input type="checkbox" name="is_admin"> Administrador</label>
             <button type="submit">Criar</button>
         </form>
-
         <h3>Usuários existentes</h3>
         <table>
             <tr><th>Usuário</th><th>Admin</th><th>Criado em</th><th>Ação</th></tr>

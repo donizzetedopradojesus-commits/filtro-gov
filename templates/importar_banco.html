@@ -10,8 +10,7 @@
         .container { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; }
         input[type=file] { margin: 15px 0; }
         button { padding: 12px 25px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .flash { padding: 10px; margin-bottom: 15px; border-radius: 5px; }
-        .success { background: #d4edda; }
+        .flash { padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #d4edda; }
     </style>
 </head>
 <body>
@@ -22,7 +21,7 @@
         <h2>Importar Banco de Dados</h2>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                <div class="flash success">{{ messages[0] }}</div>
+                <div class="flash">{{ messages[0] }}</div>
             {% endif %}
         {% endwith %}
         <p>Envie o arquivo <b>banco_dados.db</b> do seu computador.</p>

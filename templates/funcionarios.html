@@ -25,13 +25,11 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
         {% endwith %}
-
         <form method="post">
             <input type="hidden" name="action" value="adicionar">
             <input type="text" name="nome" placeholder="Nome do funcionário" required>
             <button type="submit">Adicionar</button>
         </form>
-
         <ul>
             {% for f in funcionarios %}
             <li>

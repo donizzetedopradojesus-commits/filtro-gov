@@ -12,7 +12,6 @@
         input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
         button { background: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
         .flash { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
-        .flash.error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
@@ -29,7 +28,6 @@
         <form method="post" enctype="multipart/form-data">
             <label>Arquivo (TXT, ZIP ou GZ)</label>
             <input type="file" name="arquivo" accept=".txt,.zip,.gz,.txt.gz" required>
-
             <label>Funcionário</label>
             <select name="funcionario" required>
                 <option value="">Selecione...</option>
@@ -37,13 +35,11 @@
                     <option value="{{ f }}">{{ f }}</option>
                 {% endfor %}
             </select>
-
             <label>Letra da Agência</label>
             <select name="letra">
                 <option value="N">N</option>
                 <option value="B">B</option>
             </select>
-
             <button type="submit">Processar e Gerar Arquivos</button>
         </form>
     </div>
